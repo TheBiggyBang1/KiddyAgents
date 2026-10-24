@@ -1,0 +1,7 @@
+{
+  "dependencies": ["."],
+  "graphs": {
+    "kiddy": "./src/kiddy/graph.py:graph"
+  },
+  "env": ".env"
+}

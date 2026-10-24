@@ -1,0 +1,44 @@
+[project]
+name = "kiddy"
+version = "0.1.0"
+description = "A small team of AI agents that writes, illustrates, voices, edits and publishes kids' videos"
+readme = "README.md"
+authors = [
+    { name = "TheBiggyBang1", email = "mehdihandous1@gmail.com" }
+]
+requires-python = ">=3.13"
+dependencies = [
+    "imageio-ffmpeg>=0.6.0",
+    "langchain>=1.4.7",
+    "langchain-groq>=1.1.3",
+    "langgraph>=1.2.17",
+    "langgraph-checkpoint-sqlite>=3.1.2",
+    "pillow>=13.0.0",
+    "pydantic>=2.14.1",
+    "python-dotenv>=1.2.4",
+    "pyyaml>=6.0.3",
+    "rich>=15.0.0",
+    "typer>=0.27.3",
+]
+
+[project.scripts]
+kiddy = "kiddy.cli:app"
+
+[build-system]
+requires = ["uv_build>=0.13.5,<0.14.0"]
+build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "pytest>=9.1.1",
+    "ruff>=0.17.2",
+]
+
+[tool.ruff]
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
