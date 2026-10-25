@@ -11,6 +11,11 @@ wheels/
 # Virtual environments
 .venv
 
+# Node packages and Remotion build output (reinstall with `npm install` in video/)
+node_modules/
+video/out/
+video/build/
+
 # Secrets: never commit these
 .env
 secrets/

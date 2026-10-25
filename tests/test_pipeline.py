@@ -3,7 +3,8 @@ from pathlib import Path
 import pytest
 from langgraph.checkpoint.memory import InMemorySaver
 
-from kiddy.graph import SERDE, build_graph, sqlite_checkpointer
+from kiddy.checkpoints import SERDE, sqlite_checkpointer
+from kiddy.graph import build_graph
 from kiddy.media.ffmpeg import media_duration
 from kiddy.nodes.editor import timeline
 from kiddy.nodes.illustrator import MAX_REDRAWS

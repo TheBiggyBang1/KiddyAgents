@@ -1,0 +1,206 @@
+{
+  "_about": "Ball-and-stick letters for tracing, one SVG path per stroke in writing order. Grid: x 0-100; y 0 = top line, 50 = middle line, 100 = baseline, 140 = descender line. 'say' is what the narrator says while the stroke is drawn.",
+  "A": [
+    {"d": "M50 0 L15 100", "say": "Slant down to the left."},
+    {"d": "M50 0 L85 100", "say": "Back to the top, and slant down to the right."},
+    {"d": "M30 60 L70 60", "say": "Slide across the middle."}
+  ],
+  "B": [
+    {"d": "M22 0 L22 100", "say": "Pull straight down."},
+    {"d": "M22 0 L55 0 C80 0 80 50 55 50 L22 50", "say": "Back to the top, and curve around to the middle."},
+    {"d": "M22 50 L60 50 C88 50 88 100 60 100 L22 100", "say": "Curve around again, to the bottom."}
+  ],
+  "C": [
+    {"d": "M80 15 C68 -2 28 -4 18 30 C10 62 22 98 50 100 C66 101 76 94 82 84", "say": "Circle back, like a big open mouth."}
+  ],
+  "D": [
+    {"d": "M22 0 L22 100", "say": "Pull straight down."},
+    {"d": "M22 0 L45 0 C95 0 95 100 45 100 L22 100", "say": "Back to the top, and make a big curve to the bottom."}
+  ],
+  "E": [
+    {"d": "M24 0 L24 100", "say": "Pull straight down."},
+    {"d": "M24 0 L76 0", "say": "Slide right at the top."},
+    {"d": "M24 50 L66 50", "say": "Slide right in the middle."},
+    {"d": "M24 100 L76 100", "say": "Slide right at the bottom."}
+  ],
+  "F": [
+    {"d": "M24 0 L24 100", "say": "Pull straight down."},
+    {"d": "M24 0 L76 0", "say": "Slide right at the top."},
+    {"d": "M24 50 L66 50", "say": "Slide right in the middle."}
+  ],
+  "G": [
+    {"d": "M80 15 C68 -2 28 -4 18 30 C10 62 22 98 50 100 C70 101 82 90 82 70 L82 58 L56 58", "say": "Circle back, go up, and slide in."}
+  ],
+  "H": [
+    {"d": "M20 0 L20 100", "say": "Pull straight down."},
+    {"d": "M80 0 L80 100", "say": "Pull down again, on the other side."},
+    {"d": "M20 50 L80 50", "say": "Slide across the middle."}
+  ],
+  "I": [
+    {"d": "M50 0 L50 100", "say": "Pull straight down."},
+    {"d": "M28 0 L72 0", "say": "Slide across the top."},
+    {"d": "M28 100 L72 100", "say": "Slide across the bottom."}
+  ],
+  "J": [
+    {"d": "M66 0 L66 72 C66 106 22 106 18 76", "say": "Pull down, and curve up like a hook."}
+  ],
+  "K": [
+    {"d": "M22 0 L22 100", "say": "Pull straight down."},
+    {"d": "M78 0 L22 58", "say": "Slant in, to the middle."},
+    {"d": "M40 40 L80 100", "say": "Slant out, to the bottom."}
+  ],
+  "L": [
+    {"d": "M24 0 L24 100", "say": "Pull straight down."},
+    {"d": "M24 100 L76 100", "say": "Slide right."}
+  ],
+  "M": [
+    {"d": "M16 0 L16 100", "say": "Pull straight down."},
+    {"d": "M16 0 L50 72 L84 0 L84 100", "say": "Back to the top. Slant down, slant up, and pull down."}
+  ],
+  "N": [
+    {"d": "M20 0 L20 100", "say": "Pull straight down."},
+    {"d": "M20 0 L80 100 L80 0", "say": "Back to the top. Slant down, then push up."}
+  ],
+  "O": [
+    {"d": "M50 0 C14 0 12 100 50 100 C88 100 86 0 50 0", "say": "Circle back, all the way around."}
+  ],
+  "P": [
+    {"d": "M22 0 L22 100", "say": "Pull straight down."},
+    {"d": "M22 0 L58 0 C86 0 86 54 58 54 L22 54", "say": "Back to the top, and curve around to the middle."}
+  ],
+  "Q": [
+    {"d": "M50 0 C14 0 12 100 50 100 C88 100 86 0 50 0", "say": "Circle back, all the way around."},
+    {"d": "M58 72 L84 104", "say": "Add a little tail."}
+  ],
+  "R": [
+    {"d": "M22 0 L22 100", "say": "Pull straight down."},
+    {"d": "M22 0 L58 0 C86 0 86 54 58 54 L22 54", "say": "Back to the top, and curve around to the middle."},
+    {"d": "M48 54 L82 100", "say": "Slant down to the right."}
+  ],
+  "S": [
+    {"d": "M80 16 C70 -4 22 -4 22 24 C22 50 78 46 80 74 C82 104 24 108 16 84", "say": "Curve back, then curve forward, like a snake."}
+  ],
+  "T": [
+    {"d": "M50 0 L50 100", "say": "Pull straight down."},
+    {"d": "M18 0 L82 0", "say": "Slide across the top."}
+  ],
+  "U": [
+    {"d": "M20 0 L20 64 C20 108 80 108 80 64 L80 0", "say": "Pull down, curve around, and push up."}
+  ],
+  "V": [
+    {"d": "M16 0 L50 100 L84 0", "say": "Slant down, then slant up."}
+  ],
+  "W": [
+    {"d": "M8 0 L28 100 L50 30 L72 100 L92 0", "say": "Slant down, up, down, and up."}
+  ],
+  "X": [
+    {"d": "M20 0 L80 100", "say": "Slant down to the right."},
+    {"d": "M80 0 L20 100", "say": "Now slant down to the left."}
+  ],
+  "Y": [
+    {"d": "M16 0 L50 50", "say": "Slant down to the middle."},
+    {"d": "M84 0 L50 50", "say": "Slant down to meet it."},
+    {"d": "M50 50 L50 100", "say": "Pull straight down."}
+  ],
+  "Z": [
+    {"d": "M18 0 L82 0 L18 100 L82 100", "say": "Slide right, slant down to the left, and slide right."}
+  ],
+  "a": [
+    {"d": "M72 60 C62 46 24 46 22 75 C20 104 62 106 72 88", "say": "Circle back."},
+    {"d": "M72 50 L72 100", "say": "Pull straight down."}
+  ],
+  "b": [
+    {"d": "M22 0 L22 100", "say": "Pull down, from the top line to the bottom."},
+    {"d": "M22 75 C22 44 76 44 76 75 C76 106 22 106 22 75", "say": "Circle forward, all the way around."}
+  ],
+  "c": [
+    {"d": "M74 58 C62 44 24 46 22 75 C20 104 62 108 74 92", "say": "Circle back, and stop."}
+  ],
+  "d": [
+    {"d": "M72 75 C72 44 22 44 22 75 C22 106 72 106 72 75", "say": "Circle back, all the way around."},
+    {"d": "M72 0 L72 100", "say": "Now pull down, from the top line."}
+  ],
+  "e": [
+    {"d": "M22 75 L74 75 C74 44 22 42 22 75 C22 106 62 108 74 92", "say": "Slide across, then circle back."}
+  ],
+  "f": [
+    {"d": "M70 8 C62 -4 36 -2 36 24 L36 100", "say": "Curve back, and pull down."},
+    {"d": "M18 50 L58 50", "say": "Slide across."}
+  ],
+  "g": [
+    {"d": "M72 75 C72 44 22 44 22 75 C22 106 72 106 72 75", "say": "Circle back, all the way around."},
+    {"d": "M72 50 L72 124 C72 146 28 146 22 128", "say": "Pull down, and curve back."}
+  ],
+  "h": [
+    {"d": "M22 0 L22 100", "say": "Pull straight down."},
+    {"d": "M22 74 C22 44 74 44 74 74 L74 100", "say": "Push up, curve over, and pull down."}
+  ],
+  "i": [
+    {"d": "M50 50 L50 100", "say": "Pull straight down."},
+    {"d": "M50 28 L50 29", "say": "Add a dot on top."}
+  ],
+  "j": [
+    {"d": "M58 50 L58 124 C58 146 24 146 18 128", "say": "Pull down, and curve back."},
+    {"d": "M58 28 L58 29", "say": "Add a dot on top."}
+  ],
+  "k": [
+    {"d": "M24 0 L24 100", "say": "Pull straight down."},
+    {"d": "M70 50 L24 80", "say": "Slant in."},
+    {"d": "M38 70 L72 100", "say": "Slant out."}
+  ],
+  "l": [
+    {"d": "M50 0 L50 100", "say": "Pull straight down, from the top line to the bottom."}
+  ],
+  "m": [
+    {"d": "M14 50 L14 100", "say": "Pull straight down."},
+    {"d": "M14 74 C14 44 46 44 46 74 L46 100", "say": "Push up, curve over, and pull down."},
+    {"d": "M46 74 C46 44 80 44 80 74 L80 100", "say": "And again: curve over, and pull down."}
+  ],
+  "n": [
+    {"d": "M22 50 L22 100", "say": "Pull straight down."},
+    {"d": "M22 74 C22 44 74 44 74 74 L74 100", "say": "Push up, curve over, and pull down."}
+  ],
+  "o": [
+    {"d": "M48 50 C14 50 14 100 48 100 C82 100 82 50 48 50", "say": "Circle back, all the way around."}
+  ],
+  "p": [
+    {"d": "M24 50 L24 140", "say": "Pull down, below the line."},
+    {"d": "M24 75 C24 44 76 44 76 75 C76 106 24 106 24 75", "say": "Circle forward, all the way around."}
+  ],
+  "q": [
+    {"d": "M72 75 C72 44 22 44 22 75 C22 106 72 106 72 75", "say": "Circle back, all the way around."},
+    {"d": "M72 50 L72 140", "say": "Pull down, below the line."}
+  ],
+  "r": [
+    {"d": "M26 50 L26 100", "say": "Pull straight down."},
+    {"d": "M26 76 C30 52 54 46 72 56", "say": "Push up, and curve over."}
+  ],
+  "s": [
+    {"d": "M70 58 C62 44 26 44 28 62 C30 78 68 70 70 86 C72 106 30 108 22 92", "say": "Curve back, then forward, like a little snake."}
+  ],
+  "t": [
+    {"d": "M42 14 L42 100", "say": "Pull straight down."},
+    {"d": "M22 50 L64 50", "say": "Slide across."}
+  ],
+  "u": [
+    {"d": "M22 50 L22 80 C22 106 72 106 72 80", "say": "Pull down, and curve up."},
+    {"d": "M72 50 L72 100", "say": "Pull straight down."}
+  ],
+  "v": [
+    {"d": "M18 50 L48 100 L78 50", "say": "Slant down, then slant up."}
+  ],
+  "w": [
+    {"d": "M8 50 L26 100 L48 62 L70 100 L88 50", "say": "Slant down, up, down, and up."}
+  ],
+  "x": [
+    {"d": "M22 50 L72 100", "say": "Slant down to the right."},
+    {"d": "M72 50 L22 100", "say": "Now slant down to the left."}
+  ],
+  "y": [
+    {"d": "M18 50 L48 100", "say": "Slant down."},
+    {"d": "M78 50 L34 140", "say": "Slant down, below the line."}
+  ],
+  "z": [
+    {"d": "M22 50 L72 50 L22 100 L72 100", "say": "Slide right, slant down to the left, and slide right."}
+  ]
+}

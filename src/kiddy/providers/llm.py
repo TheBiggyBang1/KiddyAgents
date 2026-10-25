@@ -106,7 +106,7 @@ class FakeLLM:
     def structured[T: BaseModel](
         self, agent: str, schema: type[T], system: str, user: str, images: Sequence[Path] = ()
     ) -> tuple[T, int]:
-        return fixtures.answer(schema), 0
+        return fixtures.answer(schema, user), 0
 
 
 def make_llm(settings: Settings, fake: bool) -> LLM:

@@ -38,6 +38,18 @@ class Providers(BaseModel):
     tts: str = "fake"
 
 
+class EdgeVoiceSettings(BaseModel):
+    rate: str = "-8%"  # a touch slower than normal, for young listeners
+    pitch: str = "+0Hz"
+
+
+class TracingSettings(BaseModel):
+    picture_style: str = (
+        "cute flat children's book illustration, bold clean outlines, bright friendly colors"
+    )
+    practice_seconds: float = 4.0  # quiet time for kids to trace along with a finger
+
+
 class GroqVoiceSettings(BaseModel):
     model: str = "canopylabs/orpheus-v1-english"
     requests_per_minute: float = 9  # the free tier allows 10
@@ -61,6 +73,8 @@ class Settings(BaseModel):
     providers: Providers = Field(default_factory=Providers)
     cloudflare: CloudflareSettings = Field(default_factory=CloudflareSettings)
     groq_voices: GroqVoiceSettings = Field(default_factory=GroqVoiceSettings)
+    edge_voices: EdgeVoiceSettings = Field(default_factory=EdgeVoiceSettings)
+    tracing: TracingSettings = Field(default_factory=TracingSettings)
     vision_check: bool = True  # a vision model looks at every picture before it's used
     narrator_voice: str
     characters: list[Character]

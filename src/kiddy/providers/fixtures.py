@@ -1,8 +1,11 @@
 """Canned agent answers for `kiddy run --fake` and the tests: an episode that fits its budget."""
 
+import re
+
 from pydantic import BaseModel
 
 from kiddy.state import Brief, FactCheck, Line, Review, Scene, Scores, Script, VisionCheck
+from kiddy.tracing.models import LetterPlan, WordIdea
 
 LEARNING_GOAL = "In autumn the green fades, and the yellow and orange that were hiding come out."
 
@@ -104,6 +107,29 @@ ANSWERS: dict[type[BaseModel], BaseModel] = {
     Brief: BRIEF, Script: SCRIPT, Review: REVIEW, VisionCheck: VISION,
 }
 
+# Three easy words per letter: the fake letter planner's answers.
+STARTER_WORDS = {
+    "A": "Apple Ant Alligator", "B": "Ball Bear Banana", "C": "Cat Cake Car",
+    "D": "Dog Duck Drum", "E": "Egg Elephant Elbow", "F": "Fish Frog Fox",
+    "G": "Goat Grapes Gift", "H": "Hat Horse House", "I": "Igloo Insect Iguana",
+    "J": "Jam Juice Jellyfish", "K": "Kite Kangaroo Key", "L": "Lion Leaf Lemon",
+    "M": "Moon Monkey Milk", "N": "Nest Nose Nut", "O": "Octopus Orange Otter",
+    "P": "Pig Pizza Penguin", "Q": "Queen Quilt Quail", "R": "Rabbit Rain Rocket",
+    "S": "Sun Star Sock", "T": "Tiger Tree Turtle", "U": "Umbrella Unicorn Ukulele",
+    "V": "Van Violin Vase", "W": "Whale Watermelon Window", "X": "Xylophone Box Fox",
+    "Y": "Yak Yarn Yogurt", "Z": "Zebra Zoo Zipper",
+}
 
-def answer[T: BaseModel](schema: type[T]) -> T:
+
+def letter_plan(letter: str) -> LetterPlan:
+    return LetterPlan(words=[
+        WordIdea(word=word, sentence=f"Can you say {word.lower()}?", picture=f"a {word.lower()}")
+        for word in STARTER_WORDS[letter].split()
+    ])
+
+
+def answer[T: BaseModel](schema: type[T], request: str = "") -> T:
+    if schema is LetterPlan:  # the planner's request names the letter: "letter: B"
+        match = re.search(r"letter: '?([A-Z])", request)
+        return letter_plan(match.group(1) if match else "A")  # type: ignore[return-value]
     return ANSWERS[schema].model_copy(deep=True)

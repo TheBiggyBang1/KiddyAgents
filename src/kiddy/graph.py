@@ -1,11 +1,6 @@
 """The production line: which agent hands its work to which."""
 
-import sqlite3
-from pathlib import Path
-
 from langgraph.checkpoint.base import BaseCheckpointSaver
-from langgraph.checkpoint.serde.jsonplus import JsonPlusSerializer
-from langgraph.checkpoint.sqlite import SqliteSaver
 from langgraph.graph import END, START, StateGraph
 from langgraph.types import RetryPolicy, Send
 
@@ -22,15 +17,12 @@ from kiddy.nodes.safety_reviewer import safety_reviewer
 from kiddy.nodes.scriptwriter import scriptwriter
 from kiddy.nodes.showrunner import showrunner
 from kiddy.nodes.thumbnail_artist import thumbnail_artist
-from kiddy.state import CHECKPOINT_TYPES, EpisodeState
+from kiddy.state import EpisodeState
 from kiddy.studio import RunContext
 
 MAX_SCRIPT_ATTEMPTS = 3
 MODEL_RETRY = RetryPolicy(max_attempts=2)  # each attempt may already ask the model twice
 MEDIA_RETRY = RetryPolicy(max_attempts=3)
-
-# Strict loading: checkpoints may only rebuild LangGraph's own types and Kiddy's state models.
-SERDE = JsonPlusSerializer(allowed_msgpack_modules=None).with_msgpack_allowlist(CHECKPOINT_TYPES)
 
 
 def after_review(state: EpisodeState) -> str:
@@ -101,11 +93,6 @@ def build_graph(checkpointer: BaseCheckpointSaver | None = None):
     g.add_edge("human_approval", "publisher")
     g.add_edge("publisher", END)
     return g.compile(checkpointer=checkpointer)
-
-
-def sqlite_checkpointer(path: Path) -> SqliteSaver:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    return SqliteSaver(sqlite3.connect(path, check_same_thread=False), serde=SERDE)
 
 
 graph = build_graph()  # what `langgraph dev` and LangGraph Studio load

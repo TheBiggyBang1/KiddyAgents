@@ -27,10 +27,23 @@ llm:
   # so keep max_tokens well under that.
   vision_check:    {model: "groq:qwen/qwen3.8-27b", structured_output: json_schema, temperature: 0.1,
                     max_tokens: 600, requests_per_minute: 2.5}
+  # Tracing videos: picks 3 words per letter. Claude Haiku 5.5 is Anthropic's cheapest model
+  # ($0.10 / $0.50 per million tokens): well under a cent per video. Needs ANTHROPIC_API_KEY.
+  # No temperature (Haiku 5.5 rejects it); low effort keeps its thinking short.
+  letter_planner:  {model: "anthropic:claude-haiku-5-5", effort: low, max_tokens: 2000,
+                    structured_output: json_schema}
 
 providers:
   images: cloudflare   # fake | cloudflare (Workers AI free tier: 10,000 neurons a day)
-  tts: groq            # fake | groq (Orpheus free tier: 100 requests and ~1 episode a day)
+  tts: edge            # fake | edge (Microsoft Edge voices, free) | groq (Orpheus)
+
+edge_voices:
+  rate: "-8%"   # a touch slower, for young listeners
+  pitch: "+0Hz"
+
+tracing:
+  picture_style: cute flat children's book illustration, bold clean outlines, bright friendly colors
+  practice_seconds: 4.0   # quiet time for kids to trace along with a finger
 
 cloudflare:
   model: "@cf/black-forest-labs/flux-2-klein-4b"   # ~17 s a picture, ~170 a day free
@@ -45,8 +58,10 @@ groq_voices:
 # Background music: drop royalty-free tracks (mp3/wav/m4a/ogg) into assets/music/, or into
 # assets/music/<mood>/ to match an episode's mood. No tracks, no music.
 
-# Orpheus voices: autumn, diana, hannah (female); austin, daniel, troy (male)
-narrator_voice: hannah
+# Edge voices: en-US-AvaNeural, en-US-EmmaNeural, en-US-JennyNeural (warm women),
+# en-US-AnaNeural, en-GB-MaisieNeural (children), en-US-AndrewNeural (man).
+# Samples: output/voice-samples/
+narrator_voice: en-US-AnaNeural
 
 # PROPOSED recurring characters. Change or replace them, but keep them original.
 characters:
@@ -55,16 +70,16 @@ characters:
     species: fox kit
     look: a small fox kit with soft orange fur, a cream-tipped tail, big amber eyes and a tiny green backpack
     personality: curious and bouncy; asks "why?" about everything
-    voice: autumn
+    voice: en-US-AnaNeural
   - id: olo
     name: Olo
     species: tortoise
     look: a gentle tortoise with a moss-green shell, a yellow knitted scarf and a small daisy growing on top of the shell
     personality: patient and kind; loves facts and explains them slowly
-    voice: daniel
+    voice: en-US-AndrewNeural
   - id: glim
     name: Glim
     species: firefly
     look: a tiny round firefly with lilac wings and a tail that glows warm yellow when she has an idea
     personality: playful and quick; lights up with excitement
-    voice: diana
+    voice: en-GB-MaisieNeural

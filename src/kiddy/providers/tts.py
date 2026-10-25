@@ -1,4 +1,4 @@
-"""Voices: a fake for offline runs, and Orpheus on Groq's free tier.
+"""Voices: a fake for offline runs, Microsoft Edge's free voices, and Orpheus on Groq.
 
 Every provider writes 24 kHz mono 16-bit WAV, so lines can be joined without re-encoding.
 """
@@ -9,6 +9,7 @@ import time
 from pathlib import Path
 from typing import Protocol
 
+import edge_tts
 import httpx
 from langchain_core.rate_limiters import InMemoryRateLimiter
 
@@ -34,6 +35,20 @@ class FakeTTS:
 
     def speak(self, text: str, voice: str, emotion: str, out: Path) -> Path:
         return audio.write_silence(out, max(1.0, len(text.split()) / WORDS_PER_SECOND))
+
+
+class EdgeVoices:
+    """Microsoft Edge's online neural voices: free and no key, but an unofficial endpoint."""
+
+    def __init__(self, rate: str, pitch: str):
+        self.rate, self.pitch = rate, pitch
+
+    def speak(self, text: str, voice: str, emotion: str, out: Path) -> Path:
+        mp3 = out.with_suffix(".mp3")
+        edge_tts.Communicate(text, voice, rate=self.rate, pitch=self.pitch).save_sync(str(mp3))
+        ffmpeg.run(ffmpeg.voice_wav_args(mp3, out))  # the shared 24 kHz mono WAV format
+        mp3.unlink()
+        return out
 
 
 class GroqVoices:
@@ -129,6 +144,8 @@ def error_message(response: httpx.Response) -> str:
 def make_tts_provider(name: str, settings: Settings) -> TTSProvider:
     if name == "fake":
         return FakeTTS()
+    if name == "edge":
+        return EdgeVoices(settings.edge_voices.rate, settings.edge_voices.pitch)
     if name == "groq":
         return GroqVoices(settings.groq_voices.model, settings.groq_voices.requests_per_minute)
-    raise ValueError(f"Unknown voice provider {name!r}: use 'fake' or 'groq'")
+    raise ValueError(f"Unknown voice provider {name!r}: use 'fake', 'edge' or 'groq'")

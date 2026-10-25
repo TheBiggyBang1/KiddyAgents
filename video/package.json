@@ -1,0 +1,22 @@
+{
+  "name": "kiddy-video",
+  "private": true,
+  "description": "Remotion renderer for Kiddy: turns a props.json written by the Python agents into a video",
+  "scripts": {
+    "studio": "remotion studio",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@remotion/cli": "4.0.538",
+    "@remotion/google-fonts": "4.0.538",
+    "@remotion/media": "4.0.538",
+    "@remotion/paths": "4.0.538",
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
+    "remotion": "4.0.538"
+  },
+  "devDependencies": {
+    "@types/react": "19.3.0",
+    "typescript": "^5.9.0"
+  }
+}

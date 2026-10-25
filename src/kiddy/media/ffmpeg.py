@@ -99,6 +99,15 @@ def final_args(picture: Path, sound: Path, measured: dict | None, out: Path) -> 
     ]
 
 
+def normalize_args(src: Path, measured: dict | None, out: Path) -> list[str]:
+    """A finished video with its sound brought to YouTube's loudness; the picture is copied."""
+    return [
+        "-y", "-i", str(src), "-c:v", "copy", "-af", loudnorm_filter(measured),
+        "-c:a", "aac", "-b:a", "192k", "-ar", "48000", "-ac", "2",
+        "-movflags", "+faststart", str(out),
+    ]
+
+
 def run(args: list[str]) -> None:
     result = subprocess.run(
         [ffmpeg_exe(), "-hide_banner", "-loglevel", "error", *args],
