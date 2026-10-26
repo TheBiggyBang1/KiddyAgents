@@ -2,6 +2,10 @@ import React from "react";
 import { Composition, Still } from "remotion";
 import { AlphabetTracing } from "./AlphabetTracing";
 import { LetterSheet } from "./LetterSheet";
+import { PuppetShow } from "./puppet/PuppetShow";
+import { PuppetThumbnail } from "./puppet/PuppetThumbnail";
+import { samplePuppetShow, samplePuppetThumbnail } from "./puppet/sample";
+import { puppetSeconds } from "./puppet/types";
 import { Thumbnail } from "./Thumbnail";
 import { FPS, frames, totalSeconds, type ThumbnailProps, type TracingProps } from "./types";
 
@@ -47,5 +51,17 @@ export const RemotionRoot: React.FC = () => (
     <Still id="Thumbnail" component={Thumbnail} width={1280} height={720}
       defaultProps={sampleThumbnail} />
     <Still id="LetterSheet" component={LetterSheet} width={2216} height={1530} />
+    <Composition
+      id="PuppetShow"
+      component={PuppetShow}
+      fps={FPS}
+      width={1920}
+      height={1080}
+      durationInFrames={frames(puppetSeconds(samplePuppetShow))}
+      defaultProps={samplePuppetShow}
+      calculateMetadata={({ props }) => ({ durationInFrames: frames(puppetSeconds(props)) })}
+    />
+    <Still id="PuppetThumbnail" component={PuppetThumbnail} width={1280} height={720}
+      defaultProps={samplePuppetThumbnail} />
   </>
 );

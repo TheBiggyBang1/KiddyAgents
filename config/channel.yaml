@@ -1,6 +1,18 @@
 # Learn play grow: channel settings and series bible. Every agent reads this file.
 
 channel_name: Learn play grow
+
+# The stem idea: the only creative input. The showrunner invents every episode from it.
+concept: >-
+  Learn Play Grow: Fennel the curious fox kit, Olo the patient tortoise and Glim the playful
+  firefly explore the world together, and every episode teaches preschoolers one simple,
+  true idea through a short puppet show or a tracing lesson.
+curriculum: [letters and sounds, numbers and counting, colors and shapes, feelings and kindness,
+  healthy habits, animals, plants and nature, simple science, seasons and weather, safety,
+  music and movement, everyday routines]
+puppet_minutes: [2, 3]   # how long a puppet show runs
+tracing_every: 4          # about one alphabet tracing video per 4 episodes
+
 audience_age: "3-6"
 language: en
 format: short animated stories that each teach one simple idea (nature, science, feelings, good habits)
@@ -32,6 +44,11 @@ llm:
   # No temperature (Haiku 5.5 rejects it); low effort keeps its thinking short.
   letter_planner:  {model: "anthropic:claude-haiku-5-5", effort: low, max_tokens: 2000,
                     structured_output: json_schema}
+  # Autopilot: the showrunner invents the next episode, the writer writes the puppet show.
+  episode_planner: {model: "anthropic:claude-haiku-5-5", effort: low, max_tokens: 2000,
+                    structured_output: json_schema}
+  puppet_writer:   {model: "anthropic:claude-haiku-5-5", effort: low, max_tokens: 8000,
+                    structured_output: json_schema}
 
 providers:
   images: cloudflare   # fake | cloudflare (Workers AI free tier: 10,000 neurons a day)
@@ -50,6 +67,15 @@ cloudflare:
   render_size: [1024, 576]                          # upscaled to 1920x1080; bigger costs more
 
 vision_check: true
+
+# YouTube (HOW_IT_WORKS.md, part 2). Approving a video uploads it as private, made for kids, and
+# YouTube makes it public by itself at the next free time below: this PC's clock, one video per
+# time. No times: videos stay private until you publish them in YouTube Studio.
+youtube:
+  upload: true                  # false: approved videos just wait in output/
+  publish_times: ["16:00"]      # e.g. ["09:00", "16:00"] for two a day
+  captions: true                # costs 400 of the 10,000 free daily quota units
+  playlists: {puppet: Puppet shows, tracing: Alphabet tracing}   # made if missing
 
 groq_voices:
   model: canopylabs/orpheus-v1-english   # accept its terms once in the Groq console

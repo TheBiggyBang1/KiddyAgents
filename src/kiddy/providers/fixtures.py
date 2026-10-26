@@ -4,6 +4,7 @@ import re
 
 from pydantic import BaseModel
 
+from kiddy.puppet.models import Beat, EpisodeIdea, PuppetScene, PuppetScript
 from kiddy.state import Brief, FactCheck, Line, Review, Scene, Scores, Script, VisionCheck
 from kiddy.tracing.models import LetterPlan, WordIdea
 
@@ -128,8 +129,79 @@ def letter_plan(letter: str) -> LetterPlan:
     ])
 
 
+FAKE_TOPICS = ["why we brush our teeth", "how bees make honey", "counting ducks to five"]
+
+
+def episode_idea(request: str) -> EpisodeIdea:
+    """A new topic each time: the request lists every past episode's topic."""
+    topic = FAKE_TOPICS[request.count("topic:") % len(FAKE_TOPICS)]
+    return EpisodeIdea(format="puppet", subject="healthy habits", topic=topic,
+                       learning_goal="We brush our teeth to keep them strong.", letter=None,
+                       why="A daily habit every child knows.")
+
+
+def beat(kind: str, character: str | None = None, text: str | None = None, **fields) -> Beat:
+    blank = {"emotion": None, "action": None, "to": None, "card": None}
+    return Beat(**{**blank, "kind": kind, "character": character, "text": text, **fields})
+
+
+def say(who: str, text: str, emotion: str = "happy") -> Beat:
+    return beat("say", who, text, emotion=emotion)
+
+
+PUPPET_SCRIPT = PuppetScript(
+    title="Why Do We Brush Our Teeth?",
+    learning_goal="We brush our teeth to keep them strong.",
+    fact_claims=["We brush our teeth to keep them strong.",
+                 "Brushing washes away bits of food that can hurt teeth."],
+    scenes=[
+        PuppetScene(background="home", cast=["fennel", "olo"], beats=[
+            say("fennel", "Good morning, Olo! I just ate a big, sticky breakfast!", "excited"),
+            beat("act", "fennel", action="jump"),
+            say("olo", "Good morning, Fennel. Did you brush your teeth after?", "calm"),
+            say("fennel", "Brush my teeth? Why do I need to do that?", "curious"),
+            beat("act", "fennel", action="think"),
+            say("olo", "Let me show you something about your teeth.", "calm"),
+            beat("card", card="a smiling tooth with tiny bits of food on it"),
+            say("olo", "Tiny bits of food stick to our teeth when we eat.", "calm"),
+            say("fennel", "Oh no! Are those bits still on my teeth?", "surprised"),
+            say("olo", "They might be. But a toothbrush can wash them away.", "happy"),
+        ]),
+        PuppetScene(background="home", cast=["fennel", "olo", "glim"], beats=[
+            say("glim", "Did somebody say toothbrush? I love brushing time!", "excited"),
+            beat("act", "glim", action="spin"),
+            beat("word", text="Brush!"),
+            say("glim", "We brush up and down, and round and round.", "happy"),
+            say("fennel", "Up and down, and round and round. Like this?", "curious"),
+            beat("act", "fennel", action="dance"),
+            say("olo", "Yes! Brush the front, the back, and the top of each tooth.", "happy"),
+            say("glim", "And we brush in the morning and at night.", "happy"),
+            say("fennel", "Morning and night. That is easy to remember!", "excited"),
+            say("olo", "We brush for as long as a little song. Two whole minutes.", "calm"),
+            say("glim", "Then we spit, and rinse the toothbrush with water.", "happy"),
+            say("fennel", "Spit, rinse, all done! My mouth feels so fresh.", "excited"),
+        ]),
+        PuppetScene(background="meadow", cast=["fennel", "olo", "glim"], beats=[
+            say("fennel", "Look at my clean teeth! They feel so smooth.", "excited"),
+            beat("act", "fennel", action="jump"),
+            say("olo", "Clean teeth stay strong, so you can crunch and munch.", "happy"),
+            say("glim", "Let's say it together. We brush to keep teeth strong!", "excited"),
+            say("fennel", "We brush to keep teeth strong!", "excited"),
+            say("olo", "Great job, friends. See you next time!", "happy"),
+            beat("act", "olo", action="wave"),
+            beat("act", "fennel", action="wave"),
+            say("glim", "Bye bye! Remember to brush tonight!", "happy"),
+        ]),
+    ],
+)
+
+
 def answer[T: BaseModel](schema: type[T], request: str = "") -> T:
     if schema is LetterPlan:  # the planner's request names the letter: "letter: B"
         match = re.search(r"letter: '?([A-Z])", request)
         return letter_plan(match.group(1) if match else "A")  # type: ignore[return-value]
+    if schema is EpisodeIdea:
+        return episode_idea(request)  # type: ignore[return-value]
+    if schema is PuppetScript:
+        return PUPPET_SCRIPT.model_copy(deep=True)  # type: ignore[return-value]
     return ANSWERS[schema].model_copy(deep=True)

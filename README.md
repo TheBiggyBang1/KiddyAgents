@@ -4,6 +4,26 @@ A small team of AI agents that writes, illustrates, voices, edits and publishes 
 built on LangGraph. The full spec is in [BUILD_PROMPT.md](BUILD_PROMPT.md); channel settings and
 characters are in [config/channel.yaml](config/channel.yaml).
 
+## Day to day: autopilot
+
+You never write a topic. The showrunner invents each episode from the stem idea in
+[config/channel.yaml](config/channel.yaml) (`concept`), rotating subjects and formats, and every
+finished video waits for you:
+
+```powershell
+uv run kiddy autopilot --count 3   # invent and make 3 episodes, one after another
+uv run kiddy review --open         # list what's waiting, and play the oldest
+uv run kiddy approve <episode>     # uploads to YouTube, goes public at the next free time
+uv run kiddy reject <episode> --notes "too much talking"   # the next episodes learn from it
+uv run kiddy schedule              # what's on YouTube and when it goes public
+```
+
+YouTube setup (once): see [HOW_IT_WORKS.md](HOW_IT_WORKS.md), part 2. Save the OAuth client as
+`secrets/client_secret.json`, then `uv run kiddy auth youtube` and sign in as the channel's account.
+
+Formats: **puppet shows** (Fennel, Olo and Glim as React puppets with lip sync, in
+`video/src/puppet/`) and **alphabet tracing** (about one in four episodes, until A-Z is done).
+
 ## Quick start (PowerShell)
 
 ```powershell

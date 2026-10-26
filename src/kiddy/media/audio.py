@@ -1,7 +1,9 @@
 """WAV helpers on the standard library: the bundled FFmpeg has no ffprobe, and WAV needs none."""
 
+import math
 import re
 import wave
+from array import array
 from pathlib import Path
 
 from kiddy.state import Timing
@@ -56,6 +58,26 @@ def place(parts: list[tuple[Path, float]], seconds: float, out: Path) -> Path:
         placed.setparams(params)
         placed.writeframes(bytes(track))
     return out
+
+
+def mouth_envelope(path: Path, fps: int) -> list[float]:
+    """How open a puppet's mouth should be on each video frame: the voice's loudness, 0 to 1."""
+    with wave.open(str(path), "rb") as wav:
+        rate, width = wav.getframerate(), wav.getsampwidth()
+        samples = array("h", wav.readframes(wav.getnframes())) if width == 2 else array("h")
+    step = max(1, rate // fps)
+    levels = [
+        math.sqrt(sum(s * s for s in samples[i: i + step]) / step)
+        for i in range(0, len(samples), step)
+    ]
+    loud = sorted(levels)[int(len(levels) * 0.95)] if levels else 0
+    if loud < 200:  # silence (fake voices): keep the mouth shut
+        return [0.0] * len(levels)
+    smooth, previous = [], 0.0
+    for level in levels:
+        previous = 0.55 * min(1.0, level / loud) + 0.45 * previous  # no jittery flapping
+        smooth.append(round(previous if previous > 0.12 else 0.0, 2))
+    return smooth
 
 
 def sentence_timings(text: str, start: float, seconds: float) -> list[Timing]:

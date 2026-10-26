@@ -6,12 +6,13 @@ from pathlib import Path
 from langgraph.checkpoint.serde.jsonplus import JsonPlusSerializer
 from langgraph.checkpoint.sqlite import SqliteSaver
 
+from kiddy.puppet.models import PUPPET_TYPES
 from kiddy.state import CHECKPOINT_TYPES
 from kiddy.tracing.models import TRACING_TYPES
 
 # Strict loading: checkpoints may only rebuild LangGraph's own types and Kiddy's state models.
 SERDE = JsonPlusSerializer(allowed_msgpack_modules=None).with_msgpack_allowlist(
-    CHECKPOINT_TYPES + TRACING_TYPES
+    CHECKPOINT_TYPES + TRACING_TYPES + PUPPET_TYPES
 )
 
 

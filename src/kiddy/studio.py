@@ -11,6 +11,7 @@ from kiddy.providers.llm import LLM, make_llm
 from kiddy.providers.tts import TTSProvider, make_tts_provider
 from kiddy.settings import Settings
 from kiddy.store import EpisodeStore
+from kiddy.youtube import YouTube, make_youtube
 
 
 @dataclass(frozen=True)
@@ -22,6 +23,7 @@ class RunContext:
     output_dir: str = "output"
     data_dir: str = "data"
     assets_dir: str = "assets"
+    secrets_dir: str = "secrets"  # the YouTube sign-in files; never committed
 
 
 @dataclass(frozen=True)
@@ -30,6 +32,7 @@ class Studio:
     llm: LLM
     images: ImageProvider
     tts: TTSProvider
+    youtube: YouTube
     store: EpisodeStore
     output_dir: Path
     assets_dir: Path  # character reference sheets live here, shared by every episode
@@ -48,6 +51,7 @@ def studio_for(ctx: RunContext) -> Studio:
         llm=make_llm(settings, fake=ctx.fake),
         images=make_image_provider("fake" if ctx.fake else settings.providers.images, settings),
         tts=make_tts_provider("fake" if ctx.fake else settings.providers.tts, settings),
+        youtube=make_youtube(ctx.fake, Path(ctx.secrets_dir)),
         store=EpisodeStore(Path(ctx.data_dir) / "kiddy.sqlite"),
         output_dir=Path(ctx.output_dir),
         # Fake reference cards must never land among the real reference sheets.

@@ -5,6 +5,7 @@ from pathlib import Path
 
 import pytest
 from langgraph.checkpoint.memory import InMemorySaver
+from langgraph.types import Command
 
 from kiddy.checkpoints import SERDE
 from kiddy.media.ffmpeg import media_duration
@@ -73,12 +74,15 @@ def test_fake_tracing_video_renders_with_remotion(fake_ctx):
     studio_for(fake_ctx).store.start("ep-trace-B")
     config = {"configurable": {"thread_id": "ep-trace-B"}}
 
-    final = graph.invoke({"episode_id": "ep-trace-B", "letter": "B"}, config, context=fake_ctx)
+    paused = graph.invoke({"episode_id": "ep-trace-B", "letter": "B"}, config, context=fake_ctx)
+    assert graph.get_state(config).next == ("approval",)  # waits for a human
+    final = graph.invoke(Command(resume={"approved": True}), config, context=fake_ctx)
 
     folder = Path(fake_ctx.output_dir) / "episodes" / "ep-trace-B"
     props = json.loads((folder / "props.json").read_text("utf-8"))
-    assert [idea.word for idea in final["plan"].words] == ["Ball", "Bear", "Banana"]
-    assert final["status"] == "ready" and final["qa"].passed
+    assert [idea.word for idea in paused["plan"].words] == ["Ball", "Bear", "Banana"]
+    assert final["status"] == "scheduled" and final["qa"].passed  # on (fake) YouTube
+    assert studio_for(fake_ctx).store.get("ep-trace-B")["youtube_video_id"] == "fake1"
     end = props["segments"][-1]["start"] + props["segments"][-1]["duration"]
     assert media_duration(folder / "video.mp4") == pytest.approx(end, abs=0.5)
     assert (folder / "thumbnail.jpg").exists()

@@ -61,6 +61,7 @@ class TracingState(TypedDict, total=False):
     metadata: YouTubeMetadata
     qa: QAReport
     tokens_used: Annotated[int, operator.add]
+    youtube: dict  # what the publisher put on YouTube (kiddy.youtube.Progress)
 
 
 class PictureJob(TypedDict):

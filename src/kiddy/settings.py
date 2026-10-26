@@ -60,8 +60,19 @@ class CloudflareSettings(BaseModel):
     render_size: tuple[int, int] = (1024, 576)  # upscaled to the video size; bigger costs more
 
 
+class YouTubeSettings(BaseModel):
+    upload: bool = False  # True: approving a video uploads it
+    publish_times: list[str] = Field(default_factory=lambda: ["16:00"])  # this PC's clock
+    captions: bool = True  # 400 of the 10,000 daily quota units
+    playlists: dict[str, str] = Field(default_factory=dict)  # format -> playlist title
+
+
 class Settings(BaseModel):
     channel_name: str
+    concept: str = ""  # the stem idea every episode grows from
+    curriculum: list[str] = Field(default_factory=list)  # subject areas the showrunner rotates
+    puppet_minutes: tuple[float, float] = (2, 3)
+    tracing_every: int = 4  # about one tracing video per this many episodes
     audience_age: str
     language: str = "en"
     format: str
@@ -76,6 +87,7 @@ class Settings(BaseModel):
     edge_voices: EdgeVoiceSettings = Field(default_factory=EdgeVoiceSettings)
     tracing: TracingSettings = Field(default_factory=TracingSettings)
     vision_check: bool = True  # a vision model looks at every picture before it's used
+    youtube: YouTubeSettings = Field(default_factory=YouTubeSettings)
     narrator_voice: str
     characters: list[Character]
 

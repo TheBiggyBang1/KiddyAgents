@@ -166,11 +166,3 @@ def qa_gate(state: TracingState, runtime: Runtime[RunContext]) -> dict:
     ])
     save_json(studio.episode_dir(state["episode_id"]) / "qa_report.json", report)
     return {"qa": report}
-
-
-def publisher(state: TracingState, runtime: Runtime[RunContext]) -> dict:
-    """No upload yet (Milestone 5): marks the episode ready."""
-    get_studio(runtime).store.update(
-        state["episode_id"], status="ready", tokens_used=state.get("tokens_used", 0)
-    )
-    return {"status": "ready"}

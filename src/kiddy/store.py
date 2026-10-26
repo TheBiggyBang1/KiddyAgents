@@ -7,7 +7,10 @@ from pathlib import Path
 
 from pydantic import BaseModel
 
-COLUMNS = ("topic", "title", "learning_goal", "format", "status", "youtube_video_id", "tokens_used")
+COLUMNS = ("topic", "title", "learning_goal", "format", "status", "youtube_video_id", "tokens_used",
+           "subject", "notes", "publish_at", "fake")
+ADDED_LATER = ("subject", "notes", "publish_at", "fake")  # columns older databases don't have yet
+UPLOADED = ("scheduled", "uploaded")  # statuses after the upload: going public later, or private
 
 
 def new_episode_id() -> str:
@@ -40,12 +43,22 @@ class EpisodeStore:
             " learning_goal text, format text, status text not null, youtube_video_id text,"
             " tokens_used integer default 0, created_at text not null)"
         )
+        have = {row["name"] for row in self._run("pragma table_info(episodes)")}
+        for column in ADDED_LATER:
+            if column not in have:
+                self._run(f"alter table episodes add column {column} text")
 
-    def start(self, episode_id: str) -> None:
+    def start(self, episode_id: str, **fields: str) -> None:
         self._run(
             "insert or ignore into episodes (id, status, created_at) values (?, 'started', ?)",
             (episode_id, datetime.now().isoformat(timespec="seconds")),
         )
+        if fields:
+            self.update(episode_id, **fields)
+
+    def get(self, episode_id: str) -> dict | None:
+        rows = self._run("select * from episodes where id = ?", (episode_id,))
+        return dict(rows[0]) if rows else None
 
     def update(self, episode_id: str, **fields: str | int) -> None:
         unknown = set(fields) - set(COLUMNS)
