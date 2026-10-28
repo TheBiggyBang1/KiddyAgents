@@ -107,6 +107,23 @@ def test_showrunner_never_repeats_and_retires_tracing_when_the_alphabet_is_done(
     assert "tracing" not in asked[1].split("formats:")[1].split("tracing_rule")[0]
 
 
+def test_showrunner_can_be_limited_to_puppet_shows(fake_ctx, monkeypatch):
+    tracing = EpisodeIdea(format="tracing", subject="letters and sounds", topic="letter D",
+                          learning_goal="g", letter="D", why="w")
+    bees = tracing.model_copy(update={"format": "puppet", "letter": None,
+                                      "topic": "how bees make honey", "subject": "animals"})
+    asked = []
+
+    def ignores_the_offer(self, agent, schema, system, user, images=()):
+        asked.append(user)
+        return (tracing if len(asked) == 1 else bees), 0
+
+    monkeypatch.setattr(FakeLLM, "structured", ignores_the_offer)
+    idea, _ = next_idea(studio_for(fake_ctx), only="puppet")
+    assert idea.format == "puppet" and len(asked) == 2  # the tracing answer was sent back
+    assert "tracing" not in asked[0].split("formats:")[1].split("tracing_rule")[0]
+
+
 def test_fake_puppet_show_renders_then_waits_for_approval(fake_ctx):
     graph = build_puppet_graph(InMemorySaver(serde=SERDE))
     studio = studio_for(fake_ctx)

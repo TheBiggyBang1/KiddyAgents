@@ -49,10 +49,14 @@ GRAPHS = {"puppet": build_puppet_graph, "tracing": build_tracing_graph, "story":
 @app.command()
 def autopilot(
     count: int = typer.Option(1, help="How many episodes to make, one after another."),
+    only: str = typer.Option("", "--format", help="Only this format: puppet or tracing."),
     fake: bool = FAKE,
     config: str = CONFIG,
 ) -> None:
     """Invent and make episodes on its own. Each one waits for your approval."""
+    if only not in ("", "puppet", "tracing"):
+        console.print(f"[red]--format must be puppet or tracing, not {only!r}.[/]")
+        raise typer.Exit(1)
     ctx = RunContext(fake=fake, config_path=config)
     require_keys(ctx, ["episode_planner", *AGENTS["puppet"], *AGENTS["tracing"]])
     studio = studio_for(ctx)
@@ -60,7 +64,7 @@ def autopilot(
     for _ in range(count + 3):  # a few spare tries for shows the reviewer discards
         if made == count:
             break
-        idea, tokens = next_idea(studio)
+        idea, tokens = next_idea(studio, only=only)
         console.print(f"\n[bold magenta]Showrunner:[/] {idea.format}, {idea.subject}: "
                       f"[bold]{idea.topic}[/]. {idea.why}")
         if idea.format == "tracing":

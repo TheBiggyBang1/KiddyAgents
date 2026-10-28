@@ -21,7 +21,8 @@ def letters_done(history: list[dict]) -> set[str]:
             and (row["topic"] or "").startswith("letter ")}
 
 
-def next_idea(studio: Studio, attempts: int = 2) -> tuple[EpisodeIdea, int]:
+def next_idea(studio: Studio, attempts: int = 2, only: str = "") -> tuple[EpisodeIdea, int]:
+    """The next episode. `only` ("puppet" or "tracing") limits it to one format."""
     cfg = studio.settings
     history = studio.store.recent(80)
     done = letters_done(history)
@@ -45,12 +46,16 @@ def next_idea(studio: Studio, attempts: int = 2) -> tuple[EpisodeIdea, int]:
         ] or "none yet",
         "your_rejection_notes": [row["notes"] for row in history if row["notes"]] or "none",
     }
+    if only:
+        request["formats"] = {only: request["formats"][only]}
     tokens, taken = 0, {(row["topic"] or "").strip().lower() for row in history}
     for _ in range(attempts):
         idea, spent = studio.llm.structured(
             "episode_planner", EpisodeIdea, system_prompt("episode_planner"), as_yaml(request)
         )
         tokens += spent
+        if idea.format not in request["formats"]:  # a format it wasn't offered
+            continue
         if idea.format == "tracing":
             letter = (idea.letter or "").strip().upper()[:1]
             if letter not in string.ascii_uppercase or letter in done:

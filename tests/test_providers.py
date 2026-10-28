@@ -2,14 +2,17 @@ import base64
 import io
 import json
 import wave
+from pathlib import Path
 
+import edge_tts
 import httpx
 import pytest
 from PIL import Image
 
+from kiddy.media import ffmpeg
 from kiddy.media.audio import duration
 from kiddy.providers.images import CloudflareImages, ImageServiceError
-from kiddy.providers.tts import GroqVoices, VoiceServiceError, chunks
+from kiddy.providers.tts import EdgeVoices, GroqVoices, VoiceServiceError, chunks
 
 
 def fake_cloudflare(answer: dict, status: int = 200) -> tuple[httpx.Client, list[httpx.Request]]:
@@ -124,6 +127,49 @@ def test_refusals_stop_instead_of_retrying(tmp_path):
     images = CloudflareImages("m", (1024, 576), client)
     with pytest.raises(ImageServiceError, match="daily limit"):
         images.generate("a", [], (1920, 1080), tmp_path / "x.png")
+
+
+def test_a_hanging_request_is_sent_again_then_stops_clearly(tmp_path):
+    answers = [httpx.ReadTimeout("hung"), httpx.ReadTimeout("hung"),
+               httpx.Response(200, json={"success": True, "result": {"image": jpeg_b64((64, 36))}})]
+
+    def busy(request: httpx.Request) -> httpx.Response:
+        answer = answers.pop(0)
+        if isinstance(answer, Exception):
+            raise answer
+        return answer
+
+    images = CloudflareImages("m", (1024, 576), httpx.Client(transport=httpx.MockTransport(busy)))
+    images.generate("a", [], (64, 36), tmp_path / "x.png")
+    assert not answers  # two hangs, then the third try answered
+
+    def down(request: httpx.Request) -> httpx.Response:
+        raise httpx.ReadTimeout("hung")
+
+    images = CloudflareImages("m", (1024, 576), httpx.Client(transport=httpx.MockTransport(down)))
+    with pytest.raises(ImageServiceError, match="didn't answer"):
+        images.generate("a", [], (64, 36), tmp_path / "y.png")
+
+
+def test_edge_waits_and_tries_again_when_no_audio_comes_back(tmp_path, monkeypatch):
+    sent = []
+
+    class FlakyEdge:
+        def __init__(self, text, voice, rate, pitch):
+            pass
+
+        def save_sync(self, path):
+            sent.append(path)
+            if len(sent) == 1:
+                raise edge_tts.exceptions.NoAudioReceived("No audio was received.")
+            Path(path).write_bytes(b"mp3")
+
+    monkeypatch.setattr(edge_tts, "Communicate", FlakyEdge)
+    monkeypatch.setattr(ffmpeg, "run", lambda args: None)
+    voices, waits = EdgeVoices("-8%", "+0Hz"), []
+    voices.sleep = waits.append
+    voices.speak("Hello!", "en-US-AndrewNeural", "", tmp_path / "x.wav")
+    assert len(sent) == 2 and waits == [EdgeVoices.PAUSE]
 
 
 def test_server_errors_raise_for_langgraph_to_retry(tmp_path):

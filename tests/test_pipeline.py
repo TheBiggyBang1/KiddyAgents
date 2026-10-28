@@ -9,7 +9,7 @@ from kiddy.media.ffmpeg import media_duration
 from kiddy.nodes.editor import timeline
 from kiddy.nodes.illustrator import MAX_REDRAWS
 from kiddy.providers.images import FakeImages
-from kiddy.providers.llm import FakeLLM
+from kiddy.providers.llm import BadModelOutput, FakeLLM
 from kiddy.state import Script, VisionCheck, latest_by_scene
 from kiddy.studio import RunContext, studio_for
 
@@ -74,6 +74,28 @@ def test_failed_vision_check_redraws_then_flags(fake_ctx, monkeypatch):
     assert flagged[2] == "Give Olo his yellow scarf" and flagged[1] is None
     assert not final["qa"].passed  # flagged pictures show up at the approval gate
     assert final["status"] == "ready"  # but they don't stop the video
+
+
+def test_a_checker_that_cant_answer_flags_the_picture_instead_of_stopping(fake_ctx,
+                                                                         monkeypatch):
+    painted = count_paintings(monkeypatch)
+    real_structured = FakeLLM.structured
+
+    def mute(self, agent, schema, system, user, images=()):
+        if schema is VisionCheck and images and Path(images[0]).name.startswith("scene_02"):
+            raise BadModelOutput("vision_check: no valid VisionCheck after 2 tries")
+        return real_structured(self, agent, schema, system, user, images)
+
+    monkeypatch.setattr(FakeLLM, "structured", mute)
+    graph = build_graph(InMemorySaver(serde=SERDE))
+    inputs, config = start(fake_ctx, "ep-mute")
+
+    final = graph.invoke(inputs, config, context=fake_ctx)
+
+    assert painted.count("scene_02") == 1  # kept, not redrawn
+    flagged = {image.scene_id: image.flagged for image in final["images"]}
+    assert "look at this picture yourself" in flagged[2]
+    assert final["status"] == "ready"
 
 
 def test_reference_sheets_are_painted_once_for_every_episode(fake_ctx, monkeypatch):

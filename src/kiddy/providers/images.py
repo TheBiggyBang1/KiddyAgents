@@ -15,6 +15,8 @@ from kiddy.settings import Settings
 PASTELS = [(255, 223, 186), (255, 250, 200), (210, 245, 210), (200, 235, 250), (225, 215, 250)]
 INK = (70, 60, 90)
 REFERENCE_MAX = 496  # FLUX.2 wants reference images smaller than 512x512
+TIMEOUT = 90  # seconds: a picture takes 15-30 s; on busy days some requests hang, so give up
+TRIES = 5  # ...and send it again, which usually answers at once
 
 
 class ImageProvider(Protocol):
@@ -65,7 +67,7 @@ class CloudflareImages:
         self.url = f"https://api.cloudflare.com/client/v4/accounts/{account}/ai/run/{model}"
         self.render_size = render_size
         self.client = client or httpx.Client(
-            headers={"Authorization": f"Bearer {token}"}, timeout=180
+            headers={"Authorization": f"Bearer {token}"}, timeout=TIMEOUT
         )
 
     def generate(
@@ -82,7 +84,7 @@ class CloudflareImages:
         }
         for index, ref in enumerate(refs[:4]):
             fields[f"input_image_{index}"] = (ref.name, reference_png(ref), "image/png")
-        response = self.client.post(self.url, files=fields)
+        response = self._post(fields)
         if response.status_code >= 500:
             response.raise_for_status()  # LangGraph's RetryPolicy retries 5xx errors
         body = response.json()
@@ -91,6 +93,15 @@ class CloudflareImages:
         with Image.open(io.BytesIO(base64.b64decode(body["result"]["image"]))) as picture:
             picture.convert("RGB").resize(size, Image.Resampling.LANCZOS).save(out, format="PNG")
         return out
+
+    def _post(self, fields: dict) -> httpx.Response:
+        for _ in range(TRIES):
+            try:
+                return self.client.post(self.url, files=fields)
+            except httpx.TimeoutException:
+                continue
+        raise ImageServiceError(f"Cloudflare didn't answer {TRIES} times in a row: it's busy. "
+                                "Try again later; finished pictures are kept.")
 
 
 def reference_png(path: Path) -> bytes:

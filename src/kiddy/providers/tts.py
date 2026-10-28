@@ -40,12 +40,24 @@ class FakeTTS:
 class EdgeVoices:
     """Microsoft Edge's online neural voices: free and no key, but an unofficial endpoint."""
 
+    TRIES = 3
+    PAUSE = 5  # seconds, then 10: Edge sometimes sends no audio during a burst of requests
+
     def __init__(self, rate: str, pitch: str):
         self.rate, self.pitch = rate, pitch
+        self.sleep = time.sleep  # tests swap it
 
     def speak(self, text: str, voice: str, emotion: str, out: Path) -> Path:
         mp3 = out.with_suffix(".mp3")
-        edge_tts.Communicate(text, voice, rate=self.rate, pitch=self.pitch).save_sync(str(mp3))
+        for attempt in range(1, self.TRIES + 1):
+            try:
+                edge_tts.Communicate(text, voice, rate=self.rate, pitch=self.pitch).save_sync(
+                    str(mp3))
+                break
+            except edge_tts.exceptions.NoAudioReceived:
+                if attempt == self.TRIES:
+                    raise
+                self.sleep(self.PAUSE * attempt)
         ffmpeg.run(ffmpeg.voice_wav_args(mp3, out))  # the shared 24 kHz mono WAV format
         mp3.unlink()
         return out

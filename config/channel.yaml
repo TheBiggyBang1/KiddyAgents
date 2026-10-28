@@ -73,8 +73,13 @@ vision_check: true
 # time. No times: videos stay private until you publish them in YouTube Studio.
 youtube:
   upload: true                  # false: approved videos just wait in output/
-  publish_times: ["16:00"]      # e.g. ["09:00", "16:00"] for two a day
-  captions: true                # costs 400 of the 10,000 free daily quota units
+  # Every hour, on the hour. Delete the night hours to publish only during the day.
+  publish_times: ["00:00", "01:00", "02:00", "03:00", "04:00", "05:00", "06:00", "07:00",
+                  "08:00", "09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00",
+                  "16:00", "17:00", "18:00", "19:00", "20:00", "21:00", "22:00", "23:00"]
+  # Costs 400 of the 10,000 free daily quota units: about 20 videos a day fit with captions on.
+  # More than 20 a day? Set it to false (YouTube still makes automatic captions).
+  captions: true
   playlists: {puppet: Puppet shows, tracing: Alphabet tracing}   # made if missing
 
 groq_voices:

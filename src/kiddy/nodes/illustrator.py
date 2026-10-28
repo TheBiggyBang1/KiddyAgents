@@ -10,11 +10,16 @@ from pathlib import Path
 from langgraph.runtime import Runtime
 
 from kiddy.prompts import as_yaml, system_prompt
+from kiddy.providers.llm import BadModelOutput
 from kiddy.state import Scene, SceneImage, SceneJob, VisionCheck
 from kiddy.store import save_json
 from kiddy.studio import RunContext, Studio, get_studio
 
 MAX_REDRAWS = 2
+UNCHECKED = VisionCheck(  # the checker couldn't answer: keep the picture, flag it for a human
+    matches_scene=False, characters_on_model=False, has_text=False, unsettling=False,
+    problems=["the picture check couldn't answer: look at this picture yourself"],
+)
 
 
 def illustrator(job: SceneJob, runtime: Runtime[RunContext]) -> dict:
@@ -44,10 +49,14 @@ def paint_checked(
         studio.images.generate(tries, refs, size, part, seed=seed)
         if not studio.settings.vision_check:
             break
-        check, spent = studio.llm.structured(
-            "vision_check", VisionCheck, system_prompt("vision_check"), as_yaml(request),
-            images=[part],
-        )
+        try:
+            check, spent = studio.llm.structured(
+                "vision_check", VisionCheck, system_prompt("vision_check"), as_yaml(request),
+                images=[part],
+            )
+        except BadModelOutput:
+            check = UNCHECKED
+            break
         tokens += spent
         if check.passed:
             break
